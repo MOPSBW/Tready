@@ -1,0 +1,32 @@
+{
+  "reauthRequest": false,
+  "responseCode": 0,
+  "responseData": [
+    {
+      "deviceIdentifier": 202481596673632,
+      "ipAddress": "192.168.1.100",
+      "deviceEnabled": "No",
+      "lastContact": 1519588662,
+      "deviceName": "OfficeCam",
+      "preMotionCapture": 5,
+      "postMotionCapture": 5,
+      "captureResolution": "2",
+      "motionDetectionMagnitudeThreshold": 25,
+      "motionDetectionVectorThreshold": 5,
+      "orientation": "landscapePowerUp"
+    },
+    {
+      "deviceIdentifier": 202481587429584,
+      "ipAddress": "192.168.0.1",
+      "deviceEnabled": "No",
+      "lastContact": 1519423937,
+      "deviceName": "Office Cam with IR",
+      "preMotionCapture": 5,
+      "postMotionCapture": 5,
+      "captureResolution": "2",
+      "motionDetectionMagnitudeThreshold": 50,
+      "motionDetectionVectorThreshold": 10,
+      "orientation": "portraitUpsideDown"
+    }
+  ]
+}

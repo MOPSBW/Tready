@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style>
+        #authedUser {
+            display: none;
+        }
+
+        img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        .smallButton {
+            font-size: 10pt;
+            padding: 5px;
+        }
+        .eventRow {
+            margin:10px;
+        }
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+
+        var serviceEndpoint = "service.php"
+
+
+        /* Deletion of Events */
+        function deleteEvent(eventId, eventSummaryId, idToLoad) {
+            var request = createRequestObject("/event/deleteEvent", {
+                "eventId": eventId
+            });
+
+            callService(request, function (response) {
+                getEvents(eventSummaryId, idToLoad)
+            });
+        }
+
+        function deleteEvents(eventIds) {
+            var request = createRequestObject("/event/deleteEvents", {
+                "eventIds": eventIds
+            });
+
+            callService(request, function (response) {
+                getEvents();
+            });
+        }
+
+        function deleteAllEvents() {
+            var request = createRequestObject("/event/deleteAllEvents", {});
+
+            callService(request, function (response) {
+                getEvents();
+            });
+        }
+
+        function getDevices() {
+            document.getElementById("devices").innerHTML = "";
+            var request = createRequestObject("/device/getDevices", {});
+            callService(request, function (response) {
+                var devices = response.responseData;
+                for (index = 0; index < devices.length; index++) {
+                    var device = devices[index];
+                    var deviceTemplate = document.getElementById("deviceTemplate").cloneNode(true);
+
+                    var domIdentifier = "device" + device.deviceIdentifier;
+                    deviceTemplate.id = domIdentifier;
+
+                    deviceTemplate.querySelector("#deviceId").innerHTML = device.deviceIdentifier;
+                    deviceTemplate.querySelector("#ipAddress").innerHTML = device.ipAddress;
+                    deviceTemplate.querySelector("#lastContact").innerHTML = new Date(device.lastContact * 1000);
+                    deviceTemplate.querySelector("#deviceName").innerHTML = device.deviceName;
+                    deviceTemplate.querySelector("#preMotionCapture").innerHTML = device.preMotionCapture;
+                    deviceTemplate.querySelector("#postMotionCapture").innerHTML = device.postMotionCapture;
+                    deviceTemplate.querySelector("#captureResolution").innerHTML = device.captureResolution;
+                    deviceTemplate.querySelector("#magnitudeThreshold").innerHTML = device.motionDetectionMagnitudeThreshold;
+                    deviceTemplate.querySelector("#vectorThreshold").innerHTML = device.motionDetectionVectorThreshold;
+                    deviceTemplate.querySelector("#orientation").innerHTML = device.orientation;
+                    currentStatus = "Disabled";
+                    if (device.deviceEnabled == "Yes") {
+                        currentStatus = "Enabled";
+                    }
+
+                    deviceTemplate.querySelector("#deviceEnabled").innerHTML = currentStatus;
+                    // Because of the way that tables are updated, we had to append to innerHTML
+                    (function (device) {
+                        deviceTemplate.querySelector("#deviceForm").id = "deviceForm" + device.deviceIdentifier;
+                        deviceTemplate.querySelector("#submitEditButton").addEventListener("click", function() {
+                            magnitudeThreshold = document.getElementById("mag" + device.deviceIdentifier).value;
+                            vectorThreshold = document.getElementById("vec" + device.deviceIdentifier).value;
+                            document.getElementById("deviceForm" + device.deviceIdentifier).style.display = "none";
+                            updateDetectionThreshold(device.deviceIdentifier, magnitudeThreshold, vectorThreshold)
+
+                        });
+                        deviceTemplate.querySelector("#submitEditButton").id = "submitEditButton" + device.deviceIdentifier;
+                        deviceTemplate.querySelector("#magnitudeThresholdFormInput").value = device.motionDetectionMagnitudeThreshold;
+                        deviceTemplate.querySelector("#vectorThresholdFormInput").value = device.motionDetectionVectorThreshold;
+                        deviceTemplate.querySelector("#magnitudeThresholdFormInput").id = "mag" + device.deviceIdentifier;
+                        deviceTemplate.querySelector("#vectorThresholdFormInput").id = "vec" + device.deviceIdentifier;
+
+                        deviceTemplate.querySelector("#editButton").addEventListener("click", function() {
+                           document.getElementById("deviceForm" + device.deviceIdentifier).style.display = "block";
+                        });
+
+                        if (device.deviceEnabled == "No") {
+                            deviceTemplate.querySelector("#deviceEnableButton").addEventListener("click", function () {
+                                enableCamera(device.deviceIdentifier);
+                            });
+                            deviceTemplate.querySelector("#deviceEnableButton").style.display = "inline";
+                            deviceTemplate.querySelector("#deviceDisableButton").style.display = "none";
+                        }
+                        else {
+                            deviceTemplate.querySelector("#deviceDisableButton").addEventListener("click", function () {
+                                disableCamera((device.deviceIdentifier))
+                            });
+                            deviceTemplate.querySelector("#deviceEnableButton").style.display = "none";
+                            deviceTemplate.querySelector("#deviceDisableButton").style.display = "inline";
+                        }
+                    }(device));
+
+                    deviceTemplate.style.display = "block";
+
+                    document.getElementById("devices").appendChild(deviceTemplate);
+
+                }
+            });
+        }
+
+        function getEvents() {
+            var request = createRequestObject("/event/getEvents", {});
+
+            // The service is called and an anonymous function is passed to be used as a callback
+            callService(request, function (response) {
+                var events = response.responseData;
+                document.getElementById("events").innerHTML = "";
+
+                for (index = 0; index < events.length; index++) {
+                    var event = events[index];
+
+                    var eventTemplate = document.getElementById("eventTemplate").cloneNode(true);
+                    eventTemplate.style.display = "block";
+
+                    eventTemplate.querySelector("#eventImage").src = serviceEndpoint + "?eventId=" + event.eventId + "&thumbnail=true";
+
+
+                    eventTemplate.querySelector("#nameOfDevice").innerHTML = event.nameOfDevice;
+                    eventTemplate.querySelector("#timeStarted").innerHTML = new Date(event.timeStarted * 1000);
+                    eventTemplate.querySelector("#timeEnded").innerHTML = new Date(event.timeEnded * 1000);
+                    eventTemplate.querySelector("#eventId").innerHTML = "Event " + event.eventId;
+
+
+                    eventTemplate.querySelector("#eventDeleteButton").innerHTML = "Delete " + event.eventId;
+
+                    (function (event) {
+                        eventTemplate.querySelector("#eventImage").addEventListener("click", function () {
+                            window.open(serviceEndpoint + "?eventId=" + event.eventId);
+                        });
+                        eventTemplate.querySelector("#eventDeleteButton").addEventListener("click", function () {
+                            deleteEvent(event.eventId);
+                        });
+                    }(event));
+
+                    document.getElementById("events").appendChild(eventTemplate);
+                }
+
+            });
+        }
+
+        function enableCamera(deviceId) {
+            updateCamera(deviceId, "Yes");
+        }
+
+        function disableCamera(deviceId) {
+            updateCamera(deviceId, "No");
+
+        }
+
+        function updateDetectionThreshold(deviceId, magnitudeThreshold, vectorThreshold) {
+            var request = createRequestObject("/device/setConfig", {
+                "deviceIdentifier": deviceId,
+                "configKeyValuePairToUpdate": {
+                    "motionDetectionMagnitudeThreshold": magnitudeThreshold,
+                    "motionDetectionVectorThreshold": vectorThreshold
+                }
+            });
+            callService(request, function (response) {
+                getDevices();
+            });
+        }
+
+        function updateCamera(deviceId, value) {
+            var request = createRequestObject("/device/setConfig", {
+                "deviceIdentifier": deviceId,
+                "configKeyValuePairToUpdate": {
+                    "deviceEnabled": value
+                }
+            });
+            callService(request, function (response) {
+                getDevices();
+            });
+        };
+
+        function postEvent(fileContents) {
+            var request = createRequestObject("/event/createEvent", {
+                "deviceIdentifier": "TestClient",
+                "timeCaptured": Math.floor(Date.now() / 1000),
+                "mediaId": 0,
+                "imageOrientation": 0,
+                "fileContents": btoa(fileContents)
+            });
+
+            // The service is called and an anonymous function is passed to be used as a callback
+            callService(request, function (response) {
+                // Turn response back into JSON:
+                var responseJSON = JSON.stringify(response);
+                document.getElementById("createResult").innerHTML = "Created with ID: " + response.responseData + "<br /><br />";
+            });
+
+        }
+
+        // Each type of service should have a function that invoke the service and handles the response
+        function loginUser() {
+            // Here we pass the request object inline
+            var request = createRequestObject("/security/authenticate", {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            });
+
+            // The service is called and an anonymous function is passed to be used as a callback
+            callService(request, function (response) {
+                if (response.responseData.userId != undefined && response.responseData.userId >= 0) {
+                    document.getElementById("response").innerHTML = "Logged in with UserId of " + response.responseData.userId;
+                    document.getElementById("authedUser").style.display = "block";
+                    getEvents();
+                }
+                else {
+                    document.getElementById("response").innerHTML = "Unable to login";
+                    document.getElementById("authedUser").style.display = "none";
+                }
+            });
+        }
+
+        function checkLogin() {
+            // Here we pass the request object inline
+            var request = createRequestObject("/security/verify", {});
+
+            // The service is called and an anonymous function is passed to be used as a callback
+            callService(request, function (response) {
+                if (response.responseData.userId != undefined && response.responseData.userId >= 0) {
+                    document.getElementById("response").innerHTML = "Logged in with UserId of " + response.responseData.userId;
+                    document.getElementById("authedUser").style.display = "block";
+                    getEvents();
+                    getDevices();
+                }
+                else {
+                    document.getElementById("response").innerHTML = "Unable to login";
+                    document.getElementById("authedUser").style.display = "none";
+                }
+            });
+        }
+
+        function getHash() {
+            var request = createRequestObject("/security/getHash", {
+                toHash: document.getElementById("toHash").value
+            });
+
+            callService(request, function (response) {
+                document.getElementById("hashResult").innerHTML = response.responseData;
+            });
+        }
+
+        // This function prepares our file for posting to the server
+        function processFile() {
+            // If we supported multiple files, we can access several, but here we access the first one
+            var file = document.getElementById("file").files[0];
+
+            // Check if file was selected
+            if (file == undefined) {
+                window.alert("Please select a file");
+                return;
+            }
+
+            // Create a file reader to open the file
+            fr = new FileReader();
+
+            // After the file is done reading (loading), use an anonymous function to process it
+            fr.onload = function (readFinishedEvent) {
+                // Get the bytes from the array buffer and send them up!
+                //var imageBytes = new Uint8Array(fr.result);
+
+                // Send it to server
+                postEvent(fr.result);
+            }
+
+            // Initiate read
+            fr.readAsBinaryString(file);
+        }
+
+
+        // This is a helper function to create the appropriate request object based on service path and data
+        function createRequestObject(servicePath, serviceData) {
+            var request = {
+                servicePath: servicePath,
+                // Data in request is always encoded in JSON
+                serviceRequest: JSON.stringify(serviceData)
+            };
+
+            return request;
+        }
+
+        // This is our service client essentially, it always calls service.php which is our service endpoint
+        // and then uses the request passed to it to send as data. The response will come back parsed from JSON.
+        function callService(request, callback) {
+            $.ajax({
+                url: serviceEndpoint,
+                type: 'post',
+                data: request,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("Error occurred, please try again!" + XMLHttpRequest.status);
+                },
+                success: function (data) {
+                    callback(JSON.parse(data));
+                }
+            });
+        }
+    </script>
+</head>
+<body onload="checkLogin()">
+<div class="container">
+    <div class="page-header">
+        <h1>Tready Test Client
+            <small>Beta 1.5.3</small>
+        </h1>
+    </div>
+    <p>This test client allows the MOPS research team to test various aspects of Tready.</p>
+    <h3>Get Hash</h3>
+    Password: <input type="password" id="toHash"/>
+    <button class="btn btn-primary" onclick="getHash()">Get Hash</button>
+
+    <span class="well well-sm"><b>Hash Result:</b> <span id="hashResult"> &nbsp; &nbsp; &nbsp;</span></span>
+    <h3>Login</h3>
+    Username: <input type="username" id="username" value="agent0"/>
+    Password: <input type="password" id="password" value="password"/>
+    <button class="btn btn-primary" onclick="loginUser()">Login</button>
+    <span class="well well-sm"><b>Login Result:</b> <span id="response"> &nbsp; &nbsp; &nbsp;</span></span>
+
+    <div id="authedUser">
+        <h3>Devices
+            <button class="btn btn-default" onclick="getDevices()"><span
+                    class="glyphicon glyphicon-repeat"> </span></button>
+        </h3>
+        <div id="devices" class="row">
+        </div>
+
+
+        <h3>Create Event</h3>
+
+        <label>Select Event Video:</label>
+        <input style="display:inline-block" type="file" name="file" id="file"/>
+        <button class="btn btn-success" type="submit" onclick="processFile()">Create Event</button>
+
+        <h3>Delete Events</h3>
+        <label>Event IDs</label>
+        <input style="display:inline-block" type="text" name="eventIds" id="eventIds"/>
+
+        <button class="btn btn-danger" type="submit"
+                onclick="deleteEvents(document.getElementById('eventIds').value.split(','))">Delete Events
+        </button>
+        <button class="btn btn-danger" type="submit" onclick="deleteAllEvents()">
+            Delete ALL Events
+        </button>
+
+        <span id="createResult"></span>
+        <h3>Events
+            <button class="btn btn-default" onclick="getEvents()"><span
+                    class="glyphicon glyphicon-repeat"> </span>
+            </button>
+        </h3>
+
+
+        <div id="events" class="row">
+        </div>
+
+
+    </div>
+</div>
+</div>
+
+<!-- Start of Templates -->
+
+
+<div id="deviceTemplate" style="display:none" class="col-sm-12 col-md-4">
+    <h4><span id="deviceName">Living Room</span> (<span id="deviceEnabled"></span>) <button class='btn btn-success smallButton' id='deviceEnableButton'>Enable</button>
+        <button class='btn btn-danger smallButton' id='deviceDisableButton'>Disable</button> <button id="editButton" class='btn smallButton btn-warning'>Edit</button></h4>
+    <div class="panel form-group form-inline" id="deviceForm" style="display:none">
+        Magnitude Threshold <input class="form-control smallForm" id="magnitudeThresholdFormInput" type="text" /><br /><br />
+        Vector Threshold <input class="form-control smallForm"  id="vectorThresholdFormInput" type="text" /><br /><br />
+        <button class="btn btn-primary" id="submitEditButton">Submit Changes</button>
+    </div>
+    <dl class="dl-horizontal">
+
+        <dt>IP Address</dt>
+        <dd id="ipAddress"></dd>
+        <dt>Last Contact</dt>
+        <dd id="lastContact"></dd>
+        <dt>Pre Motion Capture</dt>
+        <dd id="preMotionCapture"></dd>
+        <dt>Post Motion Capture</dt>
+        <dd id="postMotionCapture"></dd>
+        <dt>Capture Resolution</dt>
+        <dd id="captureResolution"></dd>
+        <dt>Magnitude Threshold</dt>
+        <dd id="magnitudeThreshold"></dd>
+        <dt>Vector Threshold</dt>
+        <dd id="vectorThreshold"></dd>
+        <dt>Orientation</dt>
+        <dd id="orientation"></dd>
+        <dt>Device Id</dt>
+        <dd id="deviceId"></dd>
+    </dl>
+
+</div>
+
+
+<div id="eventTemplate" style="display:none" class="row eventRow">
+    <div class="col-xs-12 col-md-4">
+        <img id="eventImage" class="img-responsive img-rounded" src=""/>
+    </div>
+    <div class="col-xs-12 col-md-8 ">
+        <dl class="dl-horizontal">
+            <dt>Event ID:</dt>
+            <dd id="eventId"></dd>
+            <dt>Time Started:</dt>
+            <dd id="timeStarted"></dd>
+            <dt>Time Ended:</dt>
+            <dd id="timeEnded"></dd>
+            <dt>Name of Device:</dt>
+            <dd id="nameOfDevice"></dd>
+            <dt>Available Actions</dt>
+            <dd>
+                <br/>
+                <button id="eventDeleteButton" class="btn btn-danger">Delete Event</button>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+</body>
+</html>

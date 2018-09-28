@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_devices"
+            android:icon="@drawable/ic_device_icon"
+            android:title="@string/devices" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings_title" />
+
+        <item android:title="Resources">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_contribute"
+                        android:icon="@drawable/ic_person_add_black_24dp"
+                        android:title="Contribute" />
+                    <item
+                        android:id="@+id/nav_help"
+                        android:icon="@android:drawable/ic_menu_help"
+                        android:title="Help" />
+                    <item
+                        android:id="@+id/nav_feedback"
+                        android:icon="@drawable/ic_feedback_black_24dp"
+                        android:title="Send feedback" />
+                </group>
+            </menu>
+        </item>
+    </group>
+
+</menu>

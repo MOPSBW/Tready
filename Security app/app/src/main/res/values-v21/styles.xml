@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="preferenceTheme">@style/AppPreferenceFragmentCompatStyle</item>
+    </style>
+
+    <!--Preferences theme-->
+    <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment">
+    </style>
+
+    <!--Button theme-->
+    <style name="PrimaryButton" parent="Theme.AppCompat">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+</resources>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--- EventSummaryActivity Category -->
+    <PreferenceCategory
+        android:title = "@string/alerts">
+
+        <CheckBoxPreference
+            android:key = "notifications_key"
+            android:title = "@string/notifications"
+            android:summary = "@string/notificationSummary"
+            android:defaultValue="true">
+        </CheckBoxPreference>
+
+    </PreferenceCategory>
+
+    <!-- Device Category -->
+    <PreferenceCategory
+        android:title = "Devices">
+
+        <Preference
+            android:key = "service_endpoint_key"
+            android:title = "@string/serviceEndpoint"
+            android:summary="@string/serviceEndpointSummary">
+        </Preference>
+
+        <Preference
+            android:key = "my_devices_key"
+            android:title = "@string/devices"
+            android:summary="@string/devicesSummary">
+        </Preference>
+
+        <Preference
+            android:key = "pi_hub_key"
+            android:title = "@string/piHub"
+            android:summary = "@string/piHubSummary">
+        </Preference>
+
+    </PreferenceCategory>
+
+    <!-- Permissions Category -->
+    <PreferenceCategory
+        android:title="@string/permissions">
+
+        <CheckBoxPreference
+            android:key = "storage_key"
+            android:title = "@string/storage"
+            android:summary = "@string/storageSummary">
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+    <!-- Local Account Category -->
+    <PreferenceCategory
+        android:title="@string/account">
+
+        <Preference
+            android:key = "sign_out_key"
+            android:title = "@string/signOut"
+            android:summary = "@string/signOutSummary">
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

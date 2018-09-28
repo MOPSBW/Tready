@@ -1,0 +1,42 @@
+{
+  "reauthRequest": false,
+  "responseCode": 0,
+  "responseData": [
+    {
+      "eventId": 15694,
+      "nameOfDevice": "OfficeCam",
+      "timeStarted": 1519235282,
+      "timeEnded": 1519235312
+    },
+    {
+      "eventId": 15547,
+      "nameOfDevice": "Office Cam with IR",
+      "timeStarted": 1518318312,
+      "timeEnded": 1518318327
+    },
+    {
+      "eventId": 15546,
+      "nameOfDevice": "Office Cam with IR",
+      "timeStarted": 1518318163,
+      "timeEnded": 1518318178
+    },
+    {
+      "eventId": 15336,
+      "nameOfDevice": "Office Cam with IR",
+      "timeStarted": 1518264766,
+      "timeEnded": 1518264777
+    },
+    {
+      "eventId": 15316,
+      "nameOfDevice": "OfficeCam",
+      "timeStarted": 1517574975,
+      "timeEnded": 1517575001
+    },
+    {
+      "eventId": 15315,
+      "nameOfDevice": "Office Cam with IR",
+      "timeStarted": 1517574969,
+      "timeEnded": 1517574990
+    }
+  ]
+}
