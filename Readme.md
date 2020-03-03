@@ -1,6 +1,9 @@
 # Tready Project
 Welcome to the Tready Project which is an Open Source security system developed by the Mobile Privacy and Security Team at Baldwin Wallace. If you have questions about the project, please contact a member of the research group. Below are guides for setting up Pi Eyes and the Pi Hub using what is available in this repository.
 
+# Privacy Policy for iOS Tready Application
+We do not collect any information within this application and as such we do not share any information from this application.
+
 # Setting Up Pi Eye
 _These steps assume you are starting from a fresh install_
 1. Run raspberry pi config and do the following:
